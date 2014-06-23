@@ -43,7 +43,7 @@
     <!-- SLIDES -->
     <slide class="" id="slide-1" style="background:;">
   <hgroup>
-    <h2>What does this application do?</h2>
+    <h3>What does this application do?</h3>
   </hgroup>
   <article data-timings="">
     <ul>
@@ -64,7 +64,7 @@
 
 <slide class="" id="slide-2" style="background:;">
   <hgroup>
-    <h2>What is the FIFA ranking ?</h2>
+    <h3>What is the FIFA ranking ?</h3>
   </hgroup>
   <article data-timings="">
     <ul>
@@ -73,25 +73,14 @@
 <li>The points each team gets in a match are calculated as follows:</li>
 </ul>
 
-<h4>Points= M * I * T * C</h4>
+<h6>Points= M * I * T * C</h6>
 
-<p>M (winnind, drawing or losing a match)</p>
+<p>M (winning, drawing or losing a match)
+  I (importance of the match)
+  T (strength of opposing team)
+  C (confederation strength)</p>
 
-<p>I (importance of the match)</p>
-
-<p>T (strength of opposing team)</p>
-
-<p>C (confederation strength)</p>
-
-<h4>The total points for each team in the FIFA ranking are then weighted and calculated as follows:</h4>
-
-<p>100% of points obtained in games year to date 
-+
-50% of year T-1 points
-+
-30% of year T-2 points
-+
-20% of year T-3 points</p>
+<p>The total points for each team in the FIFA ranking are then weighted in relation to the last for years:</p>
 
 <p>For more information visit: <a href="http://www.fifa.com/worldranking/rankingtable/index.html">http://www.fifa.com/worldranking/rankingtable/index.html</a></p>
 
@@ -101,27 +90,59 @@
 
 <slide class="" id="slide-3" style="background:;">
   <hgroup>
-    <h2>How are the probabilites calculated?</h2>
+    <h3>How are the probabilites calculated?</h3>
   </hgroup>
   <article data-timings="">
-    
+    <p>We use the following reasoning to come up with the algorithm:</p>
+
+<ul>
+<li>There are 3 possible results in football (win, lose or draw)</li>
+<li>In a totally random environment the probability of these events would be  1/3 (roughly 33%).</li>
+<li>If we base our model on FIFA rankings then we should skew the distribution towards the higher ranked team proportianally to its relation to the lower ranked team.</li>
+</ul>
+
+<p>We then come up with this formula (w=higher ranked, l=lower ranked):</p>
+
+<ul>
+<li>Higher ranked team to win: 
+probwin = 34+((66/50) * ((w/(w+l))*100 -50))</li>
+<li>Draw:
+probdraw= (100-probwin) * w/(w+l))</li>
+<li>Lower ranked to win:
+problose= (100-(probwin+probdraw))</li>
+</ul>
+
   </article>
   <!-- Presenter Notes -->
 </slide>
 
 <slide class="" id="slide-4" style="background:;">
   <hgroup>
-    <h2>What can I do with this application?</h2>
+    <h4>Example in R: Uruguay (1147 points) vs. England (1090 points)</h4>
   </hgroup>
   <article data-timings="">
-    <ul>
-<li>You can check how many times the actual result is in line with the calculated probability.</li>
-<li>You can improve this application.</li>
-<li>You can just have fun with it.</li>
-<li>You can do many things with this app, but please DO NOT use it for gambling :)</li>
-</ul>
+    <pre><code class="r">w &lt;- 1147
+l &lt;- 1090
+probwin &lt;- as.integer(34 + ((66/50) * ((w/(w + l)) * 100 - 50)))
+probdraw &lt;- as.integer((100 - probwin) * w/(w + l))
+problose &lt;- as.integer(100 - (probwin + probdraw))
+paste(&quot;Uruguay to win: &quot;, probwin, &quot;%&quot;)
+</code></pre>
 
-<h1>Thank you! and have a great day.</h1>
+<pre><code>## [1] &quot;Uruguay to win:  35 %&quot;
+</code></pre>
+
+<pre><code class="r">paste(&quot;England to win: &quot;, problose, &quot;%&quot;)
+</code></pre>
+
+<pre><code>## [1] &quot;England to win:  32 %&quot;
+</code></pre>
+
+<pre><code class="r">paste(&quot;Draw&quot;, probdraw, &quot;%&quot;)
+</code></pre>
+
+<pre><code>## [1] &quot;Draw 33 %&quot;
+</code></pre>
 
   </article>
   <!-- Presenter Notes -->
@@ -151,7 +172,7 @@
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=4 title='What can I do with this application?'>
+        data-slide=4 title='Example in R: Uruguay (1147 points) vs. England (1090 points)'>
          4
       </a>
     </li>
